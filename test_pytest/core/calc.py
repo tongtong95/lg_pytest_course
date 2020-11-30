@@ -14,6 +14,6 @@ class Calc:
         return a * b
 
 
-if __name__ == '__main__':
-    calc = Calc()
-    print(calc.div('a', 0))
+# if __name__ == '__main__':
+#     calc = Calc()
+#     print(calc.div('a', 0))
