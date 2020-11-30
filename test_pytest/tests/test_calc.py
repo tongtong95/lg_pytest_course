@@ -46,8 +46,6 @@ class TestCalc:
         [0.1, 0, 0],
         [-0.1, 0, 0],
         [0, -0.1, 0],
-        # 特殊值
-        ['a', 2, 0]
     ])
     def test_mul(self, a, b, c):
         # # 类的初始化，方法一：引入不同参数，类被反复初始化，逻辑复杂时，成本比较大,不推荐
@@ -55,22 +53,51 @@ class TestCalc:
         # calc = Calc()
         assert self.calc.mul(a, b) == c
 
-    # 特殊值处理
-    @pytest.mark.parametrize('a, b',[
-        ['a', 'b']
+    # 特殊值用例--类型异常
+    @pytest.mark.parametrize('a, b', [
+        ['a', 'b'],
+        ['a', 0.3],
+        ['a', -0.3]
     ])
     def test_mul1(self, a, b):
         with pytest.raises(TypeError):
             assert self.calc.mul(a, b)
 
-    # 断言一定引发异常，利用with pytest.raises():
-    # def test_mul_exec(self, a, b):
-    # with pytest.raises()
+    # 特殊值用例
+    @pytest.mark.parametrize('a, b', [
+        ['a', 0],
+        ['a', -3],
+    ])
+    def test_mul2(self, a, b):
+        with pytest.raises(Exception):
+            assert self.calc.mul(a, b)
+
+    # 特殊值用例---不懂，为什么会出来aaa的结果
+    @pytest.mark.parametrize('a, b, c', [
+        ['a', 3, 'aaa'],
+    ])
+    def test_mul2(self, a, b, c):
+        assert self.calc.mul(a, b) == c
 
     # 除法测试用例
     @pytest.mark.parametrize('a, b, c', [
-        # 整数相除
+        # 整数相除为整数
         [2, 1, 2],
+        [6, 2, 3],
+        [6, -2, -3],
+        [-6, 2, -3],
+        [-6, -2, 3],
+        # 整数相除为小数
+        [3, 2, 1.5],
+        [3, -2, -1.5],
+        [-3, 2, -1.5],
+        [-3, -2, 1.5],
+        # 结果除不尽
+        [4, 3, 1.3333333333333333],
+        [4, -3, -1.3333333333333333],
+        [-4, 3, -1.3333333333333333],
+        [-4, -3, 1.3333333333333333],
+
         # 0除以任何值
         [0, 2, 0],
         [0, -2, 0],
@@ -97,7 +124,27 @@ class TestCalc:
         with pytest.raises(ZeroDivisionError):
             assert self.calc.div(a, b)
 
+    # 除零异常值用例
+    @pytest.mark.parametrize('a, b', [
+        ['a', 'b'],
+        ['a', 3],
+        ['a', -3],
+        ['a', 0.2],
+        ['a', -0.2],
+        ['a', 0],
+        [0, 'a']
+    ])
+    def test_div2(self, a, b):
+        # 断言一定引发异常，利用with pytest.raises(异常类型):
+        # 若不知道具体异常，可以直接写pytest.raises(Exception):
+        with pytest.raises(TypeError):
+            assert self.calc.div(a, b)
+
     # 流程测试，先乘后除，先除后乘
-    def test_process(self, a, b):
-        self.calc.mul(1, 2)
-        self.calc.div(3, 4)
+    @pytest.mark.parametrize('a, b, d, e', [
+        [2, 3, 6, 1],
+        [-3, 4, 6, -2]
+    ])
+    def test_process(self, a, b, d, e):
+        c = self.calc.mul(a, b)
+        assert self.calc.div(c, d) == e
